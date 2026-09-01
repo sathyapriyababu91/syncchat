@@ -2,20 +2,29 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const mongoose = require("mongoose");
-const app = require("./app");
-const connectDB = require("./config/db");
+const express = require("express");
+const cors = require("cors"); // <- 1. Import cors here
+const http = require("http");
+const { Server } = require("socket.io");
 
+const connectDB = require("./config/db");
 const userRoutes = require("./routes/user.routes");
 const statusRoutes = require("./routes/status.routes");
 const messageRoutes = require("./routes/message.routes");
 const otpRoutes = require("./routes/otp.routes");
 
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-
 const socketHandler = require("./socket/socket");
 const { setIO } = require("./socket/socketInstance");
+
+const app = express(); // <- 2. Single app instance here
+
+// 3. CORS middleware enable pannunga
+app.use(cors({
+  origin: ["https://sycchat.netlify.app", "http://localhost:5173"],
+  credentials: true
+}));
+
+app.use(express.json()); // Body parser romba mukkiyam!
 
 const dns = require("dns");
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
