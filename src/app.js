@@ -4,10 +4,9 @@ const dns = require("dns");
 
 const app = express();
 
-// CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["https://sycchat.netlify.app", "http://localhost:5173"],
     credentials: true,
   })
 );
