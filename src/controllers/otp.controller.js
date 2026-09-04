@@ -1,8 +1,15 @@
 const OTP = require("../models/otp.model");
 const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+const twilio = require("twilio");
 
-// SEND OTP
+// Initialize Twilio client using environment variables
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
+// SEND OTP with Real SMS
 const sendOTP = async (req, res) => {
   try {
     const { phone } = req.body;
@@ -31,23 +38,27 @@ const sendOTP = async (req, res) => {
       expiresAt: expiresAt,
     });
 
-    console.log(`====================================`);
-    console.log(`🔥 YOUR OTP FOR ${formattedPhone} IS : ${otp}`);
-    console.log(`====================================`);
+    // 🚀 Send Real SMS via Twilio
+    await twilioClient.messages.create({
+      body: `Your SyncChat verification OTP is: ${otp}. Valid for 5 minutes.`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: formattedPhone,
+    });
+
+    console.log(`Real SMS sent successfully to ${formattedPhone}`);
 
     return res.status(200).json({
       success: true,
-      message: "OTP generated successfully. Check backend console terminal.",
+      message: "OTP sent successfully to your mobile number!",
     });
   } catch (error) {
     console.error("Send OTP Error:", error);
     return res.status(500).json({
       success: false,
-      message: error.message || "Failed to send OTP",
+      message: error.message || "Failed to send SMS OTP",
     });
   }
 };
-
 // VERIFY OTP
 const verifyOTP = async (req, res) => {
   try {
