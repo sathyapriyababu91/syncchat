@@ -38,11 +38,11 @@ const sendOTP = async (req, res) => {
       expiresAt: expiresAt,
     });
 
-    // 🚀 Send Real SMS via Twilio
-    await twilioClient.messages.create({
+    // Send Real SMS via Twilio
+   await twilioClient.messages.create({
       body: `Your SyncChat verification OTP is: ${otp}. Valid for 5 minutes.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: formattedPhone,
+      from: 'whatsapp:+14155238886',
+      to: `whatsapp:${formattedPhone}`,
     });
 
     console.log(`Real SMS sent successfully to ${formattedPhone}`);
