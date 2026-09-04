@@ -3,9 +3,10 @@ dotenv.config();
 
 const mongoose = require("mongoose");
 const express = require("express");
-const cors = require("cors"); // <- 1. Import cors here
+const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
+const dns = require("dns");
 
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/user.routes");
@@ -16,35 +17,41 @@ const otpRoutes = require("./routes/otp.routes");
 const socketHandler = require("./socket/socket");
 const { setIO } = require("./socket/socketInstance");
 
-const app = express(); // <- 2. Single app instance here
+const app = express();
 
-// 3. CORS middleware enable pannunga
+// 1. CORS Configuration for Express
 app.use(cors({
   origin: ["https://sycchat.netlify.app", "http://localhost:5173"],
   credentials: true
 }));
 
-app.use(express.json()); // Body parser romba mukkiyam!
+app.use(express.json());
 
-const dns = require("dns");
+// DNS Servers setup
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
-// Routes
+// Test Route
+app.get("/", (req, res) => {
+  res.send("SyncChat Backend Running...");
+});
+
+// API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/status", statusRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/otp", otpRoutes);
 
-// Profile uploads
+// Profile uploads folder
 app.use("/uploads", express.static("uploads"));
 
-// HTTP Server
+// HTTP Server creation
 const server = http.createServer(app);
 
-// Socket.IO
+// 2. Socket.IO CORS Fix (Matches Express configuration)
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["https://sycchat.netlify.app", "http://localhost:5173"],
+    credentials: true
   },
 });
 
