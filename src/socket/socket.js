@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 
+// userId -> socketId map
 const onlineUsers = new Map();
 
 const socketHandler = (io) => {
@@ -17,7 +18,7 @@ const socketHandler = (io) => {
         await User.findByIdAndUpdate(id, { isOnline: true });
         console.log("User online:", id);
 
-        // Broadcast to all connected clients the updated online users list
+        // Broadcast updated online users list
         io.emit("onlineUsers", Array.from(onlineUsers.keys()));
       } catch (error) {
         console.log("Join error:", error);
@@ -121,16 +122,22 @@ const socketHandler = (io) => {
     // USER DISCONNECT
     socket.on("disconnect", async () => {
       try {
+        let disconnectedUserId = null;
+
         for (const [userId, socketId] of onlineUsers.entries()) {
           if (socketId === socket.id) {
+            disconnectedUserId = userId;
             onlineUsers.delete(userId);
-            await User.findByIdAndUpdate(userId, { isOnline: false });
-            console.log("User offline:", userId);
-
-            // Broadcast updated online list to everyone
-            io.emit("onlineUsers", Array.from(onlineUsers.keys()));
             break;
           }
+        }
+
+        if (disconnectedUserId) {
+          await User.findByIdAndUpdate(disconnectedUserId, { isOnline: false });
+          console.log("User offline:", disconnectedUserId);
+
+          // Broadcast updated online list to everyone
+          io.emit("onlineUsers", Array.from(onlineUsers.keys()));
         }
       } catch (error) {
         console.log("Disconnect error:", error);
