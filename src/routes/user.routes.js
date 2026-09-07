@@ -4,11 +4,9 @@ const router = express.Router();
 const upload = require("../middleware/upload");
 const authMiddleware = require("../middleware/auth.middleware");
 
-// CONTROLLERS
+// CONTROLLERS (Updated to use phoneLogin instead of firebase/otp)
 const {
-  registerUser,
-  loginUser,
-  firebaseAuth, // 
+  phoneLogin,
   changePassword,
 } = require("../controllers/user.controller");
 
@@ -31,10 +29,8 @@ const {
   deleteContact,
 } = require("../controllers/contact.controller");
 
-// AUTH ROUTES
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/firebase-login", firebaseAuth); 
+// AUTH ROUTES (Single clean route for Phone & Name login)
+router.post("/phone-login", phoneLogin);
 router.put("/change-password", authMiddleware, changePassword);
 
 // PROFILE ROUTES
