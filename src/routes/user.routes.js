@@ -8,6 +8,7 @@ const authMiddleware = require("../middleware/auth.middleware");
 const {
   registerUser,
   loginUser,
+  firebaseAuth, // 
   changePassword,
 } = require("../controllers/user.controller");
 
@@ -33,6 +34,7 @@ const {
 // AUTH ROUTES
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/firebase-login", firebaseAuth); 
 router.put("/change-password", authMiddleware, changePassword);
 
 // PROFILE ROUTES

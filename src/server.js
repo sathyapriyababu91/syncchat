@@ -12,7 +12,7 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/user.routes");
 const statusRoutes = require("./routes/status.routes");
 const messageRoutes = require("./routes/message.routes");
-const otpRoutes = require("./routes/otp.routes");
+
 
 const socketHandler = require("./socket/socket");
 const { setIO } = require("./socket/socketInstance");
@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/status", statusRoutes);
 app.use("/api/message", messageRoutes);
-app.use("/api/otp", otpRoutes);
+
 
 // Profile uploads folder
 app.use("/uploads", express.static("uploads"));

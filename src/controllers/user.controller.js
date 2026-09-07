@@ -1,6 +1,64 @@
 const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 
+// FIREBASE LOGIN / REGISTER SYNC
+const firebaseAuth = async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number is required",
+      });
+    }
+
+    const cleanPhone = phone.trim().replace(/\s+/g, "");
+    const formattedPhone = cleanPhone.startsWith("+91")
+      ? cleanPhone
+      : `+91${cleanPhone}`;
+
+    // Check if user already exists in MongoDB
+    let user = await User.findOne({ phone: formattedPhone });
+
+    // If user not found, automatically create a new user (Handles Register)
+    if (!user) {
+      user = await User.create({
+        phone: formattedPhone,
+        name: "",
+      });
+    }
+
+    // Generate JWT Token
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        phone: user.phone,
+      },
+      process.env.JWT_SECRET || "fallback_secret_key",
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Authentication successful",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name || "",
+        phone: user.phone,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Firebase authentication failed",
+    });
+  }
+};
+
 // REGISTER USER
 const registerUser = async (req, res) => {
   try {
@@ -146,6 +204,7 @@ const changePassword = async (req, res) => {
 
 // EXPORT
 module.exports = {
+  firebaseAuth,
   registerUser,
   loginUser,
   searchUsers,
