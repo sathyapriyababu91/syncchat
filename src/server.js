@@ -21,7 +21,7 @@ const app = express();
 
 // 1. CORS Configuration for Express
 app.use(cors({
-  origin: ["https://sycchat.netlify.app", "http://localhost:5173"],
+  origin: ["https://syncchatweb.netlify.app/", "http://localhost:5173"],
   credentials: true
 }));
 
