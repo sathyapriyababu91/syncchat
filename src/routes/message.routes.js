@@ -13,11 +13,13 @@ const {
 
 const authMiddleware = require("../middleware/auth.middleware");
 
-// UNREAD MESSAGE COUNT
+// 1. UNREAD MESSAGE COUNT (MUST be placed before /:userId)
 router.get("/unread/:userId", authMiddleware, getUnreadCount);
 
+// 2. MARK AS READ
 router.put("/read/:userId", authMiddleware, markMessagesAsRead);
 
+// 3. SEND MESSAGE
 router.post(
   "/send",
   authMiddleware,
@@ -25,21 +27,20 @@ router.post(
   sendMessage
 );
 
-// CALL HISTORY ROUTES 
+// 4. CALL HISTORY ROUTES 
 router.post(
   "/call-history",
   authMiddleware,
   saveCallHistory
 );
 
-// 2. GET Call History 
 router.get(
   "/call-history",
   authMiddleware,
   getCallHistory
 );
 
-// DYNAMIC ROUTE
+// 5. DYNAMIC ROUTE (MUST be at the very bottom)
 router.get("/:userId", authMiddleware, getMessages);
 
 module.exports = router;
