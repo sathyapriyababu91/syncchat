@@ -13,17 +13,22 @@ const userRoutes = require("./routes/user.routes");
 const statusRoutes = require("./routes/status.routes");
 const messageRoutes = require("./routes/message.routes");
 
-
 const socketHandler = require("./socket/socket");
 const { setIO } = require("./socket/socketInstance");
 
 const app = express();
 
-// 1. CORS Configuration for Express
-app.use(cors({
-  origin: ["https://syncchatweb.netlify.app", "https://sycchat.netlify.app", "http://localhost:5173"],
-  credentials: true
-}));
+// 1. CORS Configuration (Trailing slash illama correct-a irukanum)
+app.use(
+  cors({
+    origin: [
+      "https://syncchatweb.netlify.app",
+      "https://sycchat.netlify.app",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -35,11 +40,10 @@ app.get("/", (req, res) => {
   res.send("SyncChat Backend Running...");
 });
 
-// API Routes
+// 2. API Routes (Ithu kandippa irukanum!)
 app.use("/api/users", userRoutes);
 app.use("/api/status", statusRoutes);
 app.use("/api/message", messageRoutes);
-
 
 // Profile uploads folder
 app.use("/uploads", express.static("uploads"));
@@ -47,11 +51,15 @@ app.use("/uploads", express.static("uploads"));
 // HTTP Server creation
 const server = http.createServer(app);
 
-// 2. Socket.IO CORS Fix (Matches Express configuration)
+// 3. Socket.IO CORS Fix
 const io = new Server(server, {
   cors: {
-    origin: ["https://syncchatweb.netlify.app", "https://sycchat.netlify.app", "http://localhost:5173"],
-    credentials: true
+    origin: [
+      "https://syncchatweb.netlify.app",
+      "https://sycchat.netlify.app",
+      "http://localhost:5173",
+    ],
+    credentials: true,
   },
 });
 
